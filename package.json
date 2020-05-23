@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/sweetiq/schemats/issues"
   },
-  "include": [
+  "files": [
     "src",
     "bin"
   ],
