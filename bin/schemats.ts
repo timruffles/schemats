@@ -49,29 +49,24 @@ let argv: SchematsConfig = yargs
     .alias('h', 'help')
     .argv;
 
-(async () => {
+main()
+.catch(error => {
+    console.warn('schemats failed', error)
+    process.exitCode = 1
+})
 
-    try {
-        if (!Array.isArray(argv.table)) {
-            if (!argv.table) {
-                argv.table = []
-            } else {
-                argv.table = [argv.table]
-            }
+async function main() {
+    if (!Array.isArray(argv.table)) {
+        if (!argv.table) {
+            argv.table = []
+        } else {
+            argv.table = [argv.table]
         }
-
-        let formattedOutput = await typescriptOfSchema(
-            argv.conn, argv.table, argv.schema, { camelCase: argv.camelCase, writeHeader: !argv.noHeader })
-        fs.writeFileSync(argv.output, formattedOutput)
-
-    } catch (e) {
-        console.error(e)
-        process.exit(1)
     }
 
-})().then(() => {
-    process.exit()
-}).catch((e: any) => {
-    console.warn(e)
-    process.exit(1)
-})
+    let formattedOutput = await typescriptOfSchema(
+        argv.conn, argv.table, argv.schema, { camelCase: argv.camelCase, writeHeader: !argv.noHeader }
+    )
+
+    fs.writeFileSync(argv.output, formattedOutput)
+}

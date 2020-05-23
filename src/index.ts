@@ -60,10 +60,12 @@ export async function typescriptOfTable (db: Database|string,
     return interfaces
 }
 
-export async function typescriptOfSchema (db: Database|string,
-                                          tables: string[] = [],
-                                          schema: string|null = null,
-                                          options: OptionValues = {}): Promise<string> {
+export async function typescriptOfSchema (
+  db: Database|string,
+  tables: string[] = [],
+  schema: string|null = null,
+  options: OptionValues = {}
+): Promise<string> {
     if (typeof db === 'string') {
         db = getDatabase(db)
     }

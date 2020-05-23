@@ -25,16 +25,54 @@ function normalizeName (name: string, options: Options): string {
     }
 }
 
+function jsStringList(names: string[]) {
+    return names.map(c => `${c}`).join(', ')
+}
+
 export function generateTableInterface (tableNameRaw: string, tableDefinition: TableDefinition, options: Options) {
     const tableName = options.transformTypeName(tableNameRaw)
-    let members = ''
-    Object.keys(tableDefinition).map(c => options.transformColumnName(c)).forEach((columnName) => {
-        members += `${columnName}: ${tableName}Fields.${normalizeName(columnName, options)};\n`
-    })
+    const names = Object.keys(tableDefinition)
+        .map(c => options.transformColumnName(c))
+
+    const members = names
+        .map((name) => (
+            `readonly ${name}: ${tableName}Fields.${name}`
+        )).join(', \n')
+
+
+    const defaultInsertExcludes = ['created_at', 'updated_at'];
+
+    const insertFields = Object.entries(tableDefinition)
+        .filter(([name, def]) => (
+            !def.isSequence && !defaultInsertExcludes.includes(name)
+        ))
+        .map(([name]) => options.transformColumnName(name))
+
+    const namesToColumns = Object.fromEntries(
+        Object.entries(tableDefinition)
+        .map(([name]) => [options.transformColumnName(name), name])
+    )
+
+    const converter = Object.entries(tableDefinition)
+        .map(([name]) => (
+            `${name}: this.${options.transformColumnName(name)}`
+        )).join(', ')
+
+    const recordName = normalizeName(tableName, options)
 
     return `
-        export interface ${normalizeName(tableName, options)} {
-        ${members}
+        export class ${recordName} {
+            static readonly fieldNames= ${JSON.stringify(names)} as const;
+            static readonly insertFields= ${JSON.stringify(insertFields)} as const;
+            static readonly namesToColumns= ${JSON.stringify(namesToColumns, null, 4)} as const;
+            
+            constructor(
+                ${members}
+            ) {}
+            
+            forDb() {
+                return {${converter}}
+            }
         }
     `
 }
