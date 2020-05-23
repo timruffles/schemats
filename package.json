@@ -21,7 +21,7 @@
     "coverage:ci": "npm run lint && npm run build && npm run dependency-check && nyc mocha && nyc report --reporter=text-lcov | coveralls"
   },
   "bin": {
-    "schemats": "bin/schemats.js"
+    "schemats": "bin/schemats.ts"
   },
   "repository": {
     "type": "git",
