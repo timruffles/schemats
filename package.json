@@ -29,7 +29,8 @@
   },
   "files": [
     "src",
-    "bin"
+    "bin",
+    "tsconfig.json"
   ],
   "author": "Mengxuan Xia <xiamx2004@gmail.com>",
   "contributors": [
